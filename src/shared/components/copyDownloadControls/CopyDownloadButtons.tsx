@@ -8,6 +8,7 @@ import { CustomButton } from '../CustomButton/CustomButton';
 
 export interface ICopyDownloadButtonsProps extends ICopyDownloadInputsProps {
     copyButtonRef?: (el: HTMLButtonElement | null) => void;
+    showGalaxy?: boolean;
 }
 
 export class CopyDownloadButtons extends React.Component<
@@ -21,6 +22,7 @@ export class CopyDownloadButtons extends React.Component<
         showCopy: true,
         showDownload: true,
         showCopyMessage: false,
+        showGalaxy: false,
     };
 
     get baseTooltipProps() {
@@ -80,6 +82,23 @@ export class CopyDownloadButtons extends React.Component<
         );
     }
 
+    galaxyButton() {
+        return (
+            <DefaultTooltip
+                overlay={<span>Export to Galaxy</span>}
+                {...this.baseTooltipProps}
+                overlayClassName={this.props.className}
+            >
+                <Button
+                    className="btn-sm"
+                    onClick={() => window.open('https://example.com', '_blank')}
+                >
+                    Export data to Galaxy <i className="fa fa-external-link" />
+                </Button>
+            </DefaultTooltip>
+        );
+    }
+
     customButtons() {
         // TECH: <If condition={this.props.showDownload}> was not working with returning multiple items in JSX.Element[], so moved the conditional here.
         if (!this.props.showDownload) {
@@ -108,6 +127,9 @@ export class CopyDownloadButtons extends React.Component<
                     <If condition={this.props.showCopy}>{this.copyButton()}</If>
                     <If condition={this.props.showDownload}>
                         {this.downloadButton()}
+                    </If>
+                    <If condition={this.props.showGalaxy}>
+                        {this.galaxyButton()}
                     </If>
                     {this.customButtons()}
                 </ButtonGroup>

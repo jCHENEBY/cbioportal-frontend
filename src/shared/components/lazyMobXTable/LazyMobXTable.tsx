@@ -1267,6 +1267,7 @@ export default class LazyMobXTable<T> extends React.Component<
                                 downloadData={this.getDownloadDataPromise}
                                 downloadFilename="table.tsv"
                                 {...this.props.copyDownloadProps}
+                                showGalaxy={true}
                             />
                         ) : (
                             <SimpleCopyDownloadControls

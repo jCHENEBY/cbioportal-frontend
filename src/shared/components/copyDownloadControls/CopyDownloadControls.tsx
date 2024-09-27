@@ -14,6 +14,7 @@ import { ICopyDownloadControlsProps } from './ICopyDownloadControls';
 export interface IAsyncCopyDownloadControlsProps
     extends ICopyDownloadControlsProps {
     downloadData?: () => Promise<ICopyDownloadData>;
+    showGalaxy?: boolean;
 }
 
 export interface ICopyDownloadData {
@@ -47,6 +48,7 @@ export class CopyDownloadControls extends React.Component<
         showCopy: true,
         showDownload: true,
         downloadFilename: 'data.tsv',
+        showGalaxy: false,
     };
 
     constructor(props: IAsyncCopyDownloadControlsProps) {
@@ -87,6 +89,7 @@ export class CopyDownloadControls extends React.Component<
                     showCopy={this.props.showCopy}
                     showCopyMessage={this.showTooltipCopyMessage}
                     showDownload={this.props.showDownload}
+                    showGalaxy={this.props.showGalaxy}
                     copyLabel={this.props.copyLabel}
                     downloadLabel={this.props.downloadLabel}
                     handleDownload={this.handleDownload}
