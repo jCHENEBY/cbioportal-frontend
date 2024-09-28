@@ -14,7 +14,6 @@ import { ICopyDownloadControlsProps } from './ICopyDownloadControls';
 export interface IAsyncCopyDownloadControlsProps
     extends ICopyDownloadControlsProps {
     downloadData?: () => Promise<ICopyDownloadData>;
-    showGalaxy?: boolean;
 }
 
 export interface ICopyDownloadData {
@@ -57,6 +56,7 @@ export class CopyDownloadControls extends React.Component<
         this.handleDownload = this.handleDownload.bind(this);
         this.handleCopy = this.handleCopy.bind(this);
         this.handleModalClose = this.handleModalClose.bind(this);
+        this.handleDisplay = this.handleDisplay.bind(this);
     }
 
     componentDidMount() {
@@ -95,6 +95,7 @@ export class CopyDownloadControls extends React.Component<
                     handleDownload={this.handleDownload}
                     downloadDataAsync={this.downloadDataAsStringAsync}
                     handleCopy={this.handleCopy}
+                    handleDisplay={this.handleDisplay}
                     copyButtonRef={(el: HTMLButtonElement) => {
                         this._copyButton = el;
                     }}
@@ -248,6 +249,37 @@ export class CopyDownloadControls extends React.Component<
                 .then(copyDownloadData => {
                     if (copyDownloadData.status === 'complete') {
                         // promise is resolved, we need to hide the download indicator
+                        this.downloadingData = false;
+                    } else {
+                        this.triggerDownloadError();
+                    }
+
+                    callback(copyDownloadData.text);
+                })
+                .catch(() => {
+                    this.triggerDownloadError();
+                });
+        }
+    }
+
+    public handleDisplay() {
+        this.initDisplayProcess(text => {
+            const newWindow = window.open('', '_blank');
+            if (newWindow) {
+                newWindow.document.write('<pre>' + text + '</pre>');
+                newWindow.document.close();
+            }
+        });
+    }
+
+    public initDisplayProcess(callback: (text: string) => void) {
+        if (this.props.downloadData) {
+            this.downloadingData = true;
+
+            this.props
+                .downloadData()
+                .then(copyDownloadData => {
+                    if (copyDownloadData.status === 'complete') {
                         this.downloadingData = false;
                     } else {
                         this.triggerDownloadError();

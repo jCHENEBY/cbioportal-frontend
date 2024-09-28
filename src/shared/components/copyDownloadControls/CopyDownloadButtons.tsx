@@ -8,7 +8,6 @@ import { CustomButton } from '../CustomButton/CustomButton';
 
 export interface ICopyDownloadButtonsProps extends ICopyDownloadInputsProps {
     copyButtonRef?: (el: HTMLButtonElement | null) => void;
-    showGalaxy?: boolean;
 }
 
 export class CopyDownloadButtons extends React.Component<
@@ -91,7 +90,8 @@ export class CopyDownloadButtons extends React.Component<
             >
                 <Button
                     className="btn-sm"
-                    onClick={() => window.open('https://example.com', '_blank')}
+                    // onClick={() => window.open('https://example.com', '_blank')}
+                    onClick={this.props.handleDisplay}
                 >
                     Export data to Galaxy <i className="fa fa-external-link" />
                 </Button>

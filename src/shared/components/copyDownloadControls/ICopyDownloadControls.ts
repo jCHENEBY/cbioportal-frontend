@@ -9,6 +9,7 @@ export interface ICopyDownloadControlsProps {
     copyMessageDuration?: number;
     showDownload?: boolean;
     controlsStyle?: CopyDownloadControlsStyle;
+    showGalaxy?: boolean;
 }
 
 export interface ICopyDownloadInputsProps {
@@ -23,4 +24,6 @@ export interface ICopyDownloadInputsProps {
     // expose downloadData() to allow button to handle the data on it's own.
     // TECH_DOWNLOADDATA: CopyDownloadButtons.downloadData needs to be async so it can work with either async context (IAsyncCopyDownloadControlsProps) or synchronous context (SimpleCopyDownloadControls)
     downloadDataAsync?: () => Promise<string | undefined>;
+    showGalaxy?: boolean;
+    handleDisplay?: () => void;
 }
