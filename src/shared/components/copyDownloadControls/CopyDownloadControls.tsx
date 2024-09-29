@@ -34,6 +34,7 @@ export class CopyDownloadControls extends React.Component<
     @observable copyingData = false;
     @observable showErrorMessage = false;
     @observable showTooltipCopyMessage = false;
+    @observable displayResult: string | null = null;
 
     private _copyButton: HTMLButtonElement | null = null;
     private _modalCopyButton: HTMLButtonElement | null = null;
@@ -262,14 +263,37 @@ export class CopyDownloadControls extends React.Component<
         }
     }
 
+    @action
     public handleDisplay() {
         this.initDisplayProcess(text => {
-            const newWindow = window.open('', '_blank');
-            if (newWindow) {
-                newWindow.document.write('<pre>' + text + '</pre>');
-                newWindow.document.close();
-            }
+            // console.log('Setting displayResult with text:', text);
+            this.displayResult = text;
+            this.sendToPythonScript(text);
         });
+        // this.initDisplayProcess(text => {
+        //     const newWindow = window.open('', '_blank');
+        //     if (newWindow) {
+        //         newWindow.document.write('<pre>' + text + '</pre>');
+        //         newWindow.document.close();
+        //     }
+        // });
+    }
+
+    private sendToPythonScript(data: string) {
+        fetch('http://localhost:3001/run-script', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ data: data }),
+        })
+            .then(response => response.text())
+            .then(result => {
+                console.log('Python script result:', result);
+            })
+            .catch(error => {
+                console.error('Error running script:', error);
+            });
     }
 
     public initDisplayProcess(callback: (text: string) => void) {
@@ -284,7 +308,7 @@ export class CopyDownloadControls extends React.Component<
                     } else {
                         this.triggerDownloadError();
                     }
-
+                    // console.log('Received text from downloadData:', copyDownloadData.text); // Debug log
                     callback(copyDownloadData.text);
                 })
                 .catch(() => {

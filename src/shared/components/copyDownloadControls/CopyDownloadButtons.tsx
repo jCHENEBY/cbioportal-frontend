@@ -8,7 +8,24 @@ import { CustomButton } from '../CustomButton/CustomButton';
 
 export interface ICopyDownloadButtonsProps extends ICopyDownloadInputsProps {
     copyButtonRef?: (el: HTMLButtonElement | null) => void;
+    // displayResult?: string | null;
 }
+//
+// async function sendToPythonScript(data: string) {
+//     try {
+//         const response = await fetch('http://localhost:3001/run-script', {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//             },
+//             body: JSON.stringify({ data }),
+//         });
+//         const result = await response.text();
+//         console.log(result);
+//     } catch (error) {
+//         console.error('Error running script:', error);
+//     }
+// }
 
 export class CopyDownloadButtons extends React.Component<
     ICopyDownloadButtonsProps,
@@ -97,6 +114,58 @@ export class CopyDownloadButtons extends React.Component<
                 </Button>
             </DefaultTooltip>
         );
+
+        // const runScript = async () => {
+        //     try {
+        //         const response = await fetch('http://localhost:3001/run-script');
+        //         const result = await response.text();
+        //         console.log(result);
+        //     } catch (error) {
+        //         console.error('Error running script:', error);
+        //     }
+        // };
+        //
+        // return (
+        //     <DefaultTooltip
+        //         overlay={<span>Export to Galaxy</span>}
+        //         {...this.baseTooltipProps}
+        //         overlayClassName={this.props.className}
+        //     >
+        //         <Button
+        //             className="btn-sm"
+        //             onClick={runScript}
+        //         >
+        //             Export data to Galaxy <i className="fa fa-external-link" />
+        //         </Button>
+        //     </DefaultTooltip>
+        // );
+
+        // const handleGalaxyButtonClick = () => {
+        //     if (this.props.handleDisplay) {
+        //         this.props.handleDisplay();
+        //     } else {
+        //         console.error('handleDisplay method is not defined.');
+        //     }
+        //
+        //     if (this.props.displayResult) {
+        //         console.log('displayResult:', this.props.displayResult); // Debug log
+        //         sendToPythonScript(this.props.displayResult);
+        //     } else {
+        //         console.error('No data to send to the Python script.');
+        //     }
+        // };
+        //
+        // return (
+        //     <DefaultTooltip
+        //         overlay={<span>Export to Galaxy</span>}
+        //         {...this.baseTooltipProps}
+        //         overlayClassName={this.props.className}
+        //     >
+        //         <Button className="btn-sm" onClick={handleGalaxyButtonClick}>
+        //             Export data to Galaxy <i className="fa fa-external-link" />
+        //         </Button>
+        //     </DefaultTooltip>
+        // );
     }
 
     customButtons() {
