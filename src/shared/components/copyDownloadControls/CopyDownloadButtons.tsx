@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { If } from 'react-if';
-import { Button, ButtonGroup } from 'react-bootstrap';
+import { Button, ButtonGroup, Modal, FormControl } from 'react-bootstrap';
 import { DefaultTooltip } from 'cbioportal-frontend-commons';
 import { ICopyDownloadInputsProps } from './ICopyDownloadControls';
 import { getCustomButtonConfigs } from 'shared/components/CustomButton/CustomButtonServerConfig';
@@ -29,7 +29,7 @@ export interface ICopyDownloadButtonsProps extends ICopyDownloadInputsProps {
 
 export class CopyDownloadButtons extends React.Component<
     ICopyDownloadButtonsProps,
-    {}
+    { showModal: boolean; galaxyToken: string; galaxyHistoryName: string }
 > {
     public static defaultProps = {
         className: '',
@@ -40,6 +40,15 @@ export class CopyDownloadButtons extends React.Component<
         showCopyMessage: false,
         showGalaxy: false,
     };
+
+    constructor(props: ICopyDownloadButtonsProps) {
+        super(props);
+        this.state = {
+            showModal: false,
+            galaxyToken: '',
+            galaxyHistoryName: '',
+        };
+    }
 
     get baseTooltipProps() {
         return {
@@ -98,74 +107,78 @@ export class CopyDownloadButtons extends React.Component<
         );
     }
 
+    handleGalaxyButtonClick = () => {
+        this.setState({ showModal: true });
+    };
+
+    handleModalClose = () => {
+        this.setState({ showModal: false });
+    };
+
+    handleOkClick = () => {
+        const { galaxyToken, galaxyHistoryName } = this.state;
+        this.props.handleDisplay?.(galaxyToken, galaxyHistoryName);
+        this.setState({ showModal: false });
+    };
+
+    handleInputChange = (e: React.FormEvent<FormControl>) => {
+        const target = e.target as HTMLInputElement;
+        const { name, value } = target;
+        this.setState({ [name]: value } as any);
+    };
+
     galaxyButton() {
         return (
-            <DefaultTooltip
-                overlay={<span>Export to Galaxy</span>}
-                {...this.baseTooltipProps}
-                overlayClassName={this.props.className}
-            >
-                <Button
-                    className="btn-sm"
-                    // onClick={() => window.open('https://example.com', '_blank')}
-                    onClick={this.props.handleDisplay}
+            <>
+                <DefaultTooltip
+                    overlay={<span>Export to Galaxy</span>}
+                    {...this.baseTooltipProps}
+                    overlayClassName={this.props.className}
                 >
-                    Export data to Galaxy <i className="fa fa-external-link" />
-                </Button>
-            </DefaultTooltip>
+                    <Button
+                        className="btn-sm"
+                        onClick={this.handleGalaxyButtonClick}
+                    >
+                        Export data to Galaxy{' '}
+                        <i className="fa fa-external-link" />
+                    </Button>
+                </DefaultTooltip>
+
+                <Modal
+                    show={this.state.showModal}
+                    onHide={this.handleModalClose}
+                >
+                    <Modal.Header closeButton>
+                        <Modal.Title>Enter Galaxy Details</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <FormControl
+                            type="text"
+                            placeholder="Galaxy Token"
+                            name="galaxyToken"
+                            value={this.state.galaxyToken}
+                            onChange={this.handleInputChange}
+                        />
+                        <FormControl
+                            type="text"
+                            placeholder="Galaxy History Name"
+                            name="galaxyHistoryName"
+                            value={this.state.galaxyHistoryName}
+                            onChange={this.handleInputChange}
+                        />
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button onClick={this.handleModalClose}>Cancel</Button>
+                        <Button
+                            onClick={this.handleOkClick}
+                            className="btn-primary"
+                        >
+                            OK
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            </>
         );
-
-        // const runScript = async () => {
-        //     try {
-        //         const response = await fetch('http://localhost:3001/run-script');
-        //         const result = await response.text();
-        //         console.log(result);
-        //     } catch (error) {
-        //         console.error('Error running script:', error);
-        //     }
-        // };
-        //
-        // return (
-        //     <DefaultTooltip
-        //         overlay={<span>Export to Galaxy</span>}
-        //         {...this.baseTooltipProps}
-        //         overlayClassName={this.props.className}
-        //     >
-        //         <Button
-        //             className="btn-sm"
-        //             onClick={runScript}
-        //         >
-        //             Export data to Galaxy <i className="fa fa-external-link" />
-        //         </Button>
-        //     </DefaultTooltip>
-        // );
-
-        // const handleGalaxyButtonClick = () => {
-        //     if (this.props.handleDisplay) {
-        //         this.props.handleDisplay();
-        //     } else {
-        //         console.error('handleDisplay method is not defined.');
-        //     }
-        //
-        //     if (this.props.displayResult) {
-        //         console.log('displayResult:', this.props.displayResult); // Debug log
-        //         sendToPythonScript(this.props.displayResult);
-        //     } else {
-        //         console.error('No data to send to the Python script.');
-        //     }
-        // };
-        //
-        // return (
-        //     <DefaultTooltip
-        //         overlay={<span>Export to Galaxy</span>}
-        //         {...this.baseTooltipProps}
-        //         overlayClassName={this.props.className}
-        //     >
-        //         <Button className="btn-sm" onClick={handleGalaxyButtonClick}>
-        //             Export data to Galaxy <i className="fa fa-external-link" />
-        //         </Button>
-        //     </DefaultTooltip>
-        // );
     }
 
     customButtons() {

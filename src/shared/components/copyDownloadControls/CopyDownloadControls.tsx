@@ -264,11 +264,11 @@ export class CopyDownloadControls extends React.Component<
     }
 
     @action
-    public handleDisplay() {
+    public handleDisplay(galaxyToken: string, galaxyHistoryName: string) {
         this.initDisplayProcess(text => {
             // console.log('Setting displayResult with text:', text);
             this.displayResult = text;
-            this.sendToPythonScript(text);
+            this.sendToPythonScript(text, galaxyToken, galaxyHistoryName);
         });
         // this.initDisplayProcess(text => {
         //     const newWindow = window.open('', '_blank');
@@ -279,13 +279,21 @@ export class CopyDownloadControls extends React.Component<
         // });
     }
 
-    private sendToPythonScript(data: string) {
+    private sendToPythonScript(
+        data: string,
+        galaxyToken: string,
+        galaxyHistoryName: string
+    ) {
         fetch('http://localhost:3001/run-script', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ data: data }),
+            body: JSON.stringify({
+                data: data,
+                galaxyToken,
+                galaxyHistoryName,
+            }),
         })
             .then(response => response.text())
             .then(result => {
