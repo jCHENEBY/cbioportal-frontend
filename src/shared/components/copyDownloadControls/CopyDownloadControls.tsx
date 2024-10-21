@@ -284,7 +284,7 @@ export class CopyDownloadControls extends React.Component<
         galaxyToken: string,
         galaxyHistoryName: string
     ) {
-        fetch('http://localhost:3001/run-script', {
+        fetch('http://localhost:3001/export-to-galaxy', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
