@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { Modal, Button, FormControl } from 'react-bootstrap';
+import { Modal, Button } from 'react-bootstrap';
 import { ThreeBounce } from 'better-react-spinkit';
-import { If } from 'react-if';
 import fileDownload from 'react-file-download';
 import { action, observable, makeObservable } from 'mobx';
 import { observer } from 'mobx-react';
