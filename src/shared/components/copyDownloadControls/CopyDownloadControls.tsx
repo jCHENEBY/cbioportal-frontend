@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Modal, Button } from 'react-bootstrap';
+import { Modal, Button, FormControl } from 'react-bootstrap';
 import { ThreeBounce } from 'better-react-spinkit';
 import { If } from 'react-if';
 import fileDownload from 'react-file-download';
@@ -33,6 +33,7 @@ export class CopyDownloadControls extends React.Component<
     @observable downloadingData = false;
     @observable copyingData = false;
     @observable showErrorMessage = false;
+    @observable errorMessage: string | null = null;
     @observable showTooltipCopyMessage = false;
     @observable displayResult: string | null = null;
 
@@ -57,7 +58,7 @@ export class CopyDownloadControls extends React.Component<
         this.handleDownload = this.handleDownload.bind(this);
         this.handleCopy = this.handleCopy.bind(this);
         this.handleModalClose = this.handleModalClose.bind(this);
-        this.handleDisplay = this.handleDisplay.bind(this);
+        this.handleExport = this.handleExport.bind(this);
     }
 
     componentDidMount() {
@@ -96,7 +97,7 @@ export class CopyDownloadControls extends React.Component<
                     handleDownload={this.handleDownload}
                     downloadDataAsync={this.downloadDataAsStringAsync}
                     handleCopy={this.handleCopy}
-                    handleDisplay={this.handleDisplay}
+                    handleExport={this.handleExport}
                     copyButtonRef={(el: HTMLButtonElement) => {
                         this._copyButton = el;
                     }}
@@ -186,16 +187,13 @@ export class CopyDownloadControls extends React.Component<
     public downloadErrorModal(): JSX.Element {
         return (
             <Modal
-                show={!this.copyingData && this.showErrorMessage}
+                show={this.showErrorMessage}
                 onHide={this.handleModalClose}
                 bsSize="sm"
                 className={`${copyDownloadStyles['centered-modal-dialog']}`}
             >
-                <Modal.Header>Download Error!</Modal.Header>
-                <Modal.Body>
-                    An error occurred while downloading the data. Downloaded
-                    file may contain incomplete data.
-                </Modal.Body>
+                <Modal.Header>Download/Export Error!</Modal.Header>
+                <Modal.Body>{this.errorMessage}</Modal.Body>
                 <Modal.Footer>
                     <Button
                         onClick={this.handleModalClose}
@@ -264,47 +262,70 @@ export class CopyDownloadControls extends React.Component<
     }
 
     @action
-    public handleDisplay(galaxyToken: string, galaxyHistoryName: string) {
-        this.initDisplayProcess(text => {
+    public handleExport(galaxyToken: string, galaxyHistoryName: string) {
+        this.initExportProcess(text => {
             // console.log('Setting displayResult with text:', text);
             this.displayResult = text;
             this.sendToPythonScript(text, galaxyToken, galaxyHistoryName);
         });
-        // this.initDisplayProcess(text => {
-        //     const newWindow = window.open('', '_blank');
-        //     if (newWindow) {
-        //         newWindow.document.write('<pre>' + text + '</pre>');
-        //         newWindow.document.close();
-        //     }
-        // });
     }
 
-    private sendToPythonScript(
+    private async sendToPythonScript(
         data: string,
         galaxyToken: string,
         galaxyHistoryName: string
     ) {
-        fetch('http://localhost:3001/export-to-galaxy', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                data: data,
-                galaxyToken,
-                galaxyHistoryName,
-            }),
-        })
-            .then(response => response.text())
-            .then(result => {
-                console.log('Python script result:', result);
-            })
-            .catch(error => {
-                console.error('Error running script:', error);
+        const exportUrl = 'http://localhost:3001/export-to-galaxy';
+
+        if (!galaxyToken) {
+            this.errorMessage = 'Error: Galaxy token is empty.';
+            this.showErrorMessage = true;
+            return;
+        }
+
+        if (!galaxyHistoryName) {
+            this.errorMessage = 'Error: Galaxy history name is empty.';
+            this.showErrorMessage = true;
+            return;
+        }
+
+        try {
+            const response = await fetch(exportUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    data: data,
+                    galaxyToken,
+                    galaxyHistoryName,
+                }),
             });
+
+            if (!response.ok) {
+                const errorJson = await response.json();
+                const errorMessage = errorJson.detail?.match(
+                    /error (\d+):.*?{"err_msg":"(.*?)"/
+                );
+                this.errorMessage = errorMessage
+                    ? `Server error: error ${errorMessage[1]}: ${errorMessage[2]} (URL: ${exportUrl})`
+                    : `Server error: ${errorJson.detail ||
+                          'Unknown error'} (URL: ${exportUrl})`;
+                this.showErrorMessage = true;
+                return;
+            }
+
+            const result = await response.json();
+            console.log('Python script result:', result.message);
+            this.displayResult = result.message;
+        } catch (error) {
+            this.errorMessage = `Error: ${error.message} (URL: ${exportUrl})`;
+            this.showErrorMessage = true;
+            console.error('Error running script:', error);
+        }
     }
 
-    public initDisplayProcess(callback: (text: string) => void) {
+    public initExportProcess(callback: (text: string) => void) {
         if (this.props.downloadData) {
             this.downloadingData = true;
 

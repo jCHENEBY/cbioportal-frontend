@@ -25,5 +25,5 @@ export interface ICopyDownloadInputsProps {
     // TECH_DOWNLOADDATA: CopyDownloadButtons.downloadData needs to be async so it can work with either async context (IAsyncCopyDownloadControlsProps) or synchronous context (SimpleCopyDownloadControls)
     downloadDataAsync?: () => Promise<string | undefined>;
     showGalaxy?: boolean;
-    handleDisplay?: (galaxyToken: string, galaxyHistoryName: string) => void;
+    handleExport?: (galaxyToken: string, galaxyHistoryName: string) => void;
 }

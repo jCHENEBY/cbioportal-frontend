@@ -117,7 +117,7 @@ export class CopyDownloadButtons extends React.Component<
 
     handleOkClick = () => {
         const { galaxyToken, galaxyHistoryName } = this.state;
-        this.props.handleDisplay?.(galaxyToken, galaxyHistoryName);
+        this.props.handleExport?.(galaxyToken, galaxyHistoryName);
         this.setState({ showModal: false });
     };
 
@@ -153,11 +153,12 @@ export class CopyDownloadButtons extends React.Component<
                     </Modal.Header>
                     <Modal.Body>
                         <FormControl
-                            type="text"
+                            type="password"
                             placeholder="Galaxy Token"
                             name="galaxyToken"
-                            value={this.state.galaxyToken}
+                            value={this.state.galaxyToken || ''}
                             onChange={this.handleInputChange}
+                            autoComplete="off"
                         />
                         <FormControl
                             type="text"
