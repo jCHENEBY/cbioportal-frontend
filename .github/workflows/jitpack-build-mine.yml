@@ -7,6 +7,7 @@ on:
     types:
       - created
       - prereleased
+  workflow_dispatch:
 
 jobs:
   trigger_build:
