@@ -4,6 +4,8 @@ import { ThreeBounce } from 'better-react-spinkit';
 import fileDownload from 'react-file-download';
 import { action, observable, makeObservable } from 'mobx';
 import { observer } from 'mobx-react';
+import { getServerConfig } from 'config/config';
+
 const Clipboard = require('clipboard');
 
 import copyDownloadStyles from './copyDownloadControls.module.scss';
@@ -274,7 +276,8 @@ export class CopyDownloadControls extends React.Component<
         galaxyToken: string,
         galaxyHistoryName: string
     ) {
-        const exportUrl = 'http://localhost:3001/export-to-galaxy';
+        // const exportUrl = 'http://localhost:3001/export-to-galaxy';
+        const exportUrl = getServerConfig().export_server_url;
 
         if (!galaxyToken) {
             this.errorMessage = 'Error: Galaxy token is empty.';

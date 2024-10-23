@@ -187,4 +187,5 @@ export interface IServerConfig {
     skin_study_view_show_sv_table: boolean; // this has a default
     enable_study_tags: boolean;
     download_custom_buttons_json: string;
+    export_server_url: string;
 }

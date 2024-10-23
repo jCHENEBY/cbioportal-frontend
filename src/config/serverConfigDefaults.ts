@@ -245,6 +245,8 @@ export const ServerConfigDefaults: Partial<IServerConfig> = {
     skin_study_view_show_sv_table: false,
 
     download_custom_buttons_json: '',
+
+    export_server_url: 'http://localhost:3001/export-to-galaxy',
 };
 
 export default ServerConfigDefaults;
