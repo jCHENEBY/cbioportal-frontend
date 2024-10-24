@@ -1,12 +1,8 @@
 # This GitHub Actions workflow triggers a JitPack build for the cbioportal-frontend repository whenever a new release is created.
 # It constructs the JitPack build URL using the release tag and sends a request to initiate the build process.
-name: Trigger JitPack Build on New Release
+name: Trigger JitPack Build on New Release but mine
 
 on:
-  release:
-    types:
-      - created
-      - prereleased
   workflow_dispatch:
 
 jobs:
