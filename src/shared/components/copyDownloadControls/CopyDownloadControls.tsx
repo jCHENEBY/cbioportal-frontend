@@ -291,6 +291,10 @@ export class CopyDownloadControls extends React.Component<
             return;
         }
 
+        const urlParams = new URLSearchParams(window.location.search);
+        const studyId = urlParams.get('studyId');
+        const caseId = urlParams.get('caseId');
+
         try {
             const response = await fetch(exportUrl, {
                 method: 'POST',
@@ -301,6 +305,8 @@ export class CopyDownloadControls extends React.Component<
                     data: data,
                     galaxyToken,
                     galaxyHistoryName,
+                    studyId,
+                    caseId,
                 }),
             });
 
